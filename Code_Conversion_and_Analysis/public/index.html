@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Conversion and Analysis</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to right, #FFC107, #FF9800, #FF5722, #E91E63, #9C27B0);
+      ;
+    }
+
+    @keyframes slide-in {
+      0% {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    #codeForm {
+      width: 100%;
+    }
+
+    h1 {
+      animation: slide-in 1s ease-in-out;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    form div {
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    textarea,
+    input[type="text"] {
+      width: 100%;
+      padding: 5px;
+    }
+
+    button {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #output {
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+#whole{
+ margin: 0% 25%;
+}
+    /* Global styles */
+  </style>
+</head>
+
+<body>
+  <div id="whole">
+    <h1>Code Conversion and Analysis</h1>
+
+    <form id="codeForm">
+      <div>
+        <label for="code">Code:</label>
+        <textarea id="code" rows="10" cols="50"></textarea>
+      </div>
+      <div>
+        <label for="language">Language:</label>
+        <input type="text" id="language" placeholder="Enter the target language">
+      </div>
+      <div>
+        <button type="button" id="convertBtn">Convert Code</button>
+        <button type="button" id="debugBtn">Debug Code</button>
+        <button type="button" id="qualityCheckBtn">Check Code Quality</button>
+      </div>
+    </form>
+
+    <div id="output"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
+<script>
+  document.getElementById('convertBtn').addEventListener('click', convertCode);
+  document.getElementById('debugBtn').addEventListener('click', debugCode);
+  document.getElementById('qualityCheckBtn').addEventListener('click', checkCodeQuality);
+
+  function convertCode() {
+    const code = document.getElementById('code').value;
+    const language = document.getElementById('language').value;
+
+    if (!code || !language) {
+      alert('Please enter code and target language');
+      return;
+    }
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code, language }),
+    };
+
+    fetch('/convert', requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.ok) {
+          document.getElementById('output').innerText = data.convertedCode;
+        } else {
+          alert(`Error: ${data.error}`);
+        }
+      })
+      .catch((error) => {
+        alert(`Error: ${error.message}`);
+      });
+  }
+
+  function debugCode() {
+    const code = document.getElementById('code').value;
+
+    if (!code) {
+      alert('Please enter code');
+      return;
+    }
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    };
+
+    fetch('/debug', requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.ok) {
+          document.getElementById('output').innerText = data.debugResult;
+        } else {
+          alert(`Error: ${data.error}`);
+        }
+      })
+      .catch((error) => {
+        alert(`Error: ${error.message}`);
+      });
+  }
+
+  function checkCodeQuality() {
+    const code = document.getElementById('code').value;
+
+    if (!code) {
+      alert('Please enter code');
+      return;
+    }
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    };
+
+    fetch('/check-quality', requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.ok) {
+          document.getElementById('output').innerText = data.qualityResult;
+        } else {
+          alert(`Error: ${data.error}`);
+        }
+      })
+      .catch((error) => {
+        alert(`Error: ${error.message}`);
+      });
+  }
+  const codeForm = document.getElementById('codeForm');
+  const codeInput = document.getElementById('code');
+  const languageInput = document.getElementById('language');
+  const outputDiv = document.getElementById('output');
+  const loadingDiv = document.getElementById('loading');
+
+  codeForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const code = codeInput.value;
+    const language = languageInput.value;
+
+    if (!code || !language) {
+      showAlert('Please enter code and target language.', 'error');
+      return;
+    }
+
+    const operation = e.submitter.id;
+    executeOperation(code, language, operation);
+  });
+
+  async function executeOperation(code, language, operation) {
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code, language }),
+    };
+
+    try {
+      showLoadingIndicator();
+      const response = await fetch(`/${operation}`, requestOptions);
+      const data = await response.json();
+
+      if (response.ok) {
+        displayResult(data[`${operation}Result`]);
+      } else {
+        showAlert(`Error: ${data.error}`, 'error');
+      }
+    } catch (error) {
+      showAlert(`Error: ${error.message}`, 'error');
+    } finally {
+      hideLoadingIndicator();
+    }
+  }
+
+  function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${type}`;
+    alertDiv.textContent = message;
+    codeForm.appendChild(alertDiv);
+
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 3000);
+  }
+
+  function displayResult(result) {
+    outputDiv.classList.add('fade-in');
+    outputDiv.textContent = result;
+  }
+
+  function showLoadingIndicator() {
+    loadingDiv.style.display = 'block';
+  }
+
+  function hideLoadingIndicator() {
+    loadingDiv.style.display = 'none';
+  }
+
+</script>

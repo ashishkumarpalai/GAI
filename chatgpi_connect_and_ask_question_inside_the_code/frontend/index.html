@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Quality Tool</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+</head>
+<body>
+  <div class="container">
+    <h1>Code Quality Tool</h1>
+    <form action="/convert" method="post">
+      <div class="form-group">
+        <label for="code">Code</label>
+        <textarea name="code" id="code" class="form-control" rows="10"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="language">Language</label>
+        <select name="language" id="language" class="form-control">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="java">Java</option>
+          <option value="c++">C++</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Convert</button>
+    </form>
+    <form action="/debug" method="post">
+      <div class="form-group">
+        <label for="code">Code</label>
+        <textarea name="code" id="code" class="form-control" rows="10"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Debug</button>
+    </form>
+    <form action="/check-quality" method="post">
+      <div class="form-group">
+        <label for="code">Code</label>
+        <textarea name="code" id="code" class="form-control" rows="10"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Check Quality</button>
+    </form>
+  </div>
+</body>
+</html>
